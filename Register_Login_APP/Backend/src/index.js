@@ -4,6 +4,7 @@ import cors from "cors";
 import dotenv from "dotenv";
 import mongoose from "mongoose";
 import { usersRouter } from "./routes/index.js";
+import cookieSession from "cookie-session";
 
 
 
@@ -13,14 +14,26 @@ const app = express();
 dotenv.config();
 app.use(express.json());
 
-app.use(cors());
+app.use(cors({
+    origin: "http://localhost:5173",
+    credentials: true
+}));
 app.use(morgan("dev"));
 
 const PORT = process.env.PORT || 3000;
 const URI = process.env.MONGO_URI;
 
-app.use("/api/v1/users", usersRouter.default)
 
+// app.set("trust proxy", 1);
+app.use(cookieSession({
+    name: "session",
+    signed: true,
+    secure: false,
+    maxAge: 24 * 60 * 60 * 1000 * 10,
+    httpOnly: true,
+    secret: process.env.SESSION_SECRET
+}))
+app.use("/api/v1/users", usersRouter.default)
 
 
 

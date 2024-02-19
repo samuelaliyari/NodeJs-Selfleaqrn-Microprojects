@@ -1,35 +1,94 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import { useState } from 'react';
+import { refreshToken } from './utils/refrershToken';
 
 function App() {
-  const [count, setCount] = useState(0)
+	const [login, setLogin] = useState({});
+	const [register, setRegister] = useState({});
+	const [authorization, setAuthorization] = useState('');
+	const loginUser = async () => {
+		event.preventDefault();
+		const fetchData = await fetch(
+			'http://localhost:3000/api/v1/users/login',
+			{
+				method: 'POST',
+				headers: { 'Content-Type': 'application/json' },
+				body: JSON.stringify(login),
+				credentials: 'include',
+			},
+		);
+		const { success, result, error } = await fetchData.json();
+		refreshToken(result.accessToken, setAuthorization);
+	};
+	const registerUser = async () => {
+		console.log(register);
+		event.preventDefault();
+		const fetchData = await fetch(
+			'http://localhost:3000/api/v1/users/register',
+			{
+				method: 'POST',
+				headers: { 'Content-Type': 'application/json' },
+				body: JSON.stringify(register),
+				credentials: 'include',
+			},
+		);
+	};
 
-  return (
-    <>
-      <div>
-        <a href="https://vitejs.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.jsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
+	return (
+		<>
+			<form onSubmit={() => registerUser()}>
+				<input
+					type='text'
+					onChange={(e) =>
+						setRegister({ ...register, firstName: e.target.value })
+					}
+				/>
+				<input
+					type='text'
+					onChange={(e) =>
+						setRegister({ ...register, lastName: e.target.value })
+					}
+				/>
+				<input
+					type='text'
+					onChange={(e) =>
+						setRegister({ ...register, email: e.target.value })
+					}
+				/>
+				<input
+					type='password'
+					name=''
+					id=''
+					onChange={(e) =>
+						setRegister({ ...register, password: e.target.value })
+					}
+				/>
+				<input
+					type='submit'
+					value='register'
+				/>
+			</form>
+			<form onSubmit={() => loginUser()}>
+				<input
+					type='text'
+					onChange={(e) =>
+						setLogin({ ...login, email: e.target.value })
+					}
+				/>
+				<input
+					type='password'
+					name=''
+					id=''
+					onChange={(e) =>
+						setLogin({ ...login, password: e.target.value })
+					}
+				/>
+				<input
+					type='submit'
+					value='login'
+				/>
+			</form>
+		</>
+	);
 }
 
-export default App
+export default App;
